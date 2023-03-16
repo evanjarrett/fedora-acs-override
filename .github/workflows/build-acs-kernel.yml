@@ -23,12 +23,15 @@ jobs:
 
       - name: Build the Fedora 37 RPMs
         id: build-rpms
+        env:
+          REPOSITORY: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.ref_name }}
         uses: ./fc37-action
 
       - name: Upload the RPMs as artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: kernel-${{ steps.build-rpms.outputs.kernel-version }}-fc37-acs-override-rpms
+          name: kernel-${{ steps.build-rpms.outputs.kernel-version }}-acs-override-rpms
           path: |
             /home/runner/work/_temp/_github_home/rpmbuild/RPMS/x86_64/
             !/home/runner/work/_temp/_github_home/rpmbuild/RPMS/x86_64/*debug*.rpm
@@ -57,7 +60,7 @@ jobs:
       - name: Upload the RPMs as artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: kernel-${{ steps.build-rpms.outputs.kernel-version }}-fc36-acs-override-rpms
+          name: kernel-${{ steps.build-rpms.outputs.kernel-version }}-acs-override-rpms
           path: |
             /home/runner/work/_temp/_github_home/rpmbuild/RPMS/x86_64/
             !/home/runner/work/_temp/_github_home/rpmbuild/RPMS/x86_64/*debug*.rpm

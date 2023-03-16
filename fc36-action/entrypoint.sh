@@ -1,19 +1,20 @@
 #!/bin/bash
 
+kernel_version=$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')
 # Set environment variable
-echo "kernel-version=$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+')" >> $GITHUB_OUTPUT
+echo "kernel-version=${kernel_version}" >> $GITHUB_OUTPUT
 
 # Download the latest kernel source RPM
-koji download-build --arch=src kernel-"$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')".src.rpm
+koji download-build --arch=src kernel-"${kernel_version}".src.rpm
 
 # Install the latest kernel source RPM
-rpm -Uvh kernel-"$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')".src.rpm
+rpm -Uvh kernel-"${kernel_version}".src.rpm
 
 # Install the build dependencies
 cd ~/rpmbuild/SPECS/ && dnf builddep kernel.spec -y
 
 # Download the ACS override patch
-curl -o ~/rpmbuild/SOURCES/add-acs-override.patch https://raw.githubusercontent.com/some-natalie/fedora-acs-override/main/acs/add-acs-override.patch 
+curl -o ~/rpmbuild/SOURCES/add-acs-override.patch https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_REF_NAME}/acs/add-acs-override.patch 
 
 # Edit the spec file with some sed magics
 sed -i 's/# define buildid .local/%define buildid .acs/g' ~/rpmbuild/SPECS/kernel.spec
