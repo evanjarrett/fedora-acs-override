@@ -1,13 +1,14 @@
 #!/bin/bash
 
+kernel_version=$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')
 # Set environment variable
-echo "kernel-version=$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+')" >> $GITHUB_OUTPUT
+echo "kernel-version=${kernel_version}" >> $GITHUB_OUTPUT
 
 # Download the latest kernel source RPM
-koji download-build --arch=src kernel-"$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')".src.rpm
+koji download-build --arch=src kernel-"${kernel_version}".src.rpm
 
 # Install the latest kernel source RPM
-rpm -Uvh kernel-"$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0-9][0-9]')".src.rpm
+rpm -Uvh kernel-"${kernel_version}".src.rpm
 
 # Install the build dependencies
 cd ~/rpmbuild/SPECS/ && dnf builddep kernel.spec -y
