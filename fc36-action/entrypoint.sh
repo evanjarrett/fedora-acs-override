@@ -13,7 +13,7 @@ rpm -Uvh kernel-"$(dnf list kernel | grep -Eo '[0-9]\.[0-9]+\.[0-9]+-[0-9]+.fc[0
 cd ~/rpmbuild/SPECS/ && dnf builddep kernel.spec -y
 
 # Download the ACS override patch
-curl -o ~/rpmbuild/SOURCES/add-acs-override.patch https://raw.githubusercontent.com/some-natalie/fedora-acs-override/main/acs/add-acs-override.patch 
+curl -o ~/rpmbuild/SOURCES/add-acs-override.patch https://raw.githubusercontent.com/evanjarrett/fedora-acs-override/main/acs/add-acs-override.patch
 
 # Edit the spec file with some sed magics
 sed -i 's/# define buildid .local/%define buildid .acs/g' ~/rpmbuild/SPECS/kernel.spec
